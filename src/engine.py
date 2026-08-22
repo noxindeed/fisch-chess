@@ -128,7 +128,26 @@ class Game:
             placed = move.promotion.upper() if self.turn == WHITE else move.promotion
         self.board.set(to_row, to_col, placed)
 
-    
+        # castling (also move the rook)
+        if piece.lower() == "k" and abs(to_col - from_col) == 2:
+            if to_col == 6: #king 
+                rook = self.board.get(from_row, 7, EMPTY)
+                self.board.set(from_row, 5, rook)
+            else: #queen
+                rook = self.board.get(from_row, 0, EMPTY)
+                self.board.set(from_row,3,rook)
 
-    
-            
+        record = _Record(
+            move = move,
+            captured = captured,
+            ep_captured = ep_captured,
+            castling_rights = frozenset(self.castling_rights),
+            ep_square = self.ep_square,
+            halfmove_clock = self.halfmove_clock,
+
+        )    
+
+# defination, to do later
+class _Record:
+    def __init__(EMPTY):
+        return EMPTY
