@@ -1,6 +1,6 @@
 from .board import Board, STARTING_FEN, parse_square
 from .moves import Move, generate_pseudo_moves
-from .pieces import WHITE, BLACK, color_of, opponent
+from .pieces import EMPTY, WHITE, BLACK, opponent
 
 
 # status codes
@@ -106,7 +106,27 @@ class Game:
         self.repetition_counts[key] -= 1
         record = self.history.pop()
         self._unmake(record)
-        return record.move    
+        return record.move  
+
+    def _make(self, move):
+        from_row, from_col = move.from_sq
+        to_row, to_col = move.to_sq
+
+        piece = self.board.get(from_row, from_col)
+        captured = self.board.get(to_row, to_col)
+        ep_captured = None  
+
+        # en passant capture
+        if (piece.lower() == "p" and move.to_sq == self.ep_square and captured == EMPTY and from_col != to_col):
+            ep_row = from_row
+            ep_captured = self.board.get(ep_row, to_col)
+            self.board.set(ep_row, to_col, EMPTY)
+
+        self.board.set(ep_row, to_col, EMPTY) 
+        placed = piece
+        if move.promotion:
+            placed = move.promotion.upper() if self.turn == WHITE else move.promotion
+        self.board.set(to_row, to_col, placed)
 
     
 
