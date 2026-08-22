@@ -147,7 +147,31 @@ class Game:
 
         )    
 
+    def _unmake(self,record):
+        move = record.move
+        from_row, from_col = move.from_sq
+        to_row, to_col = move.to_sq
+
+        self.turn = opponent(self.turn)
+        if self.turn == BLACK:
+            self.fullmove_number -= 1
+
+        piece = self.board.get(to_row, to_col)
+        if move.promotion:
+            piece = "P" if self.turn == WHITE else "p"
+        self.board.set(from_row, from_col, piece)
+        self.board.set(to_row, to_col, record.captured)
+
+        if record.ep_captured is not None:
+            self.board.set(from_row, to_col, record.ep_captured)
+
+        
+
+
+
+
 # defination, to do later
 class _Record:
+    __slots__ = ("move", "captured", "ep_captured", "castling_rights","ep_square", "halfmove_clock")
     def __init__(EMPTY):
         return EMPTY
