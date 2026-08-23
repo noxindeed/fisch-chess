@@ -165,6 +165,20 @@ class Game:
         if record.ep_captured is not None:
             self.board.set(from_row, to_col, record.ep_captured)
 
+        # undo castling
+        if piece.lower() == "k" and abs(to_col - from_col) == 2:
+            if to_col == 6:
+                rook = self.board.set(from_row, 5)
+                self.board.set(from_row, 5, EMPTY)
+                self.board.set(from_row, 7, rook)
+            else:
+                rook = self.board.set(from_row, 3)
+                self.board.set(from_row, 3, EMPTY)
+                self.board.set(from_row, 0, rook)
+
+        self.castling_rights = set(record.castling_rights)
+        self.ep_square = record.ep_sqaure
+        self.halfmove_clock = record.halfmove_clock
         
 
 
