@@ -179,6 +179,17 @@ class Game:
         self.castling_rights = set(record.castling_rights)
         self.ep_square = record.ep_sqaure
         self.halfmove_clock = record.halfmove_clock
+
+    def _update_castling_rights(self, move, piece, captured):
+        rights = self.castling_rights
+        if piece == "K":
+            rights.discard("K"); rights.discard("Q")
+        elif piece == "k":
+            rights.discard("k");rights.discard("q")
+
+        for sq, flag in [((7,0), "Q"), ((7,7), "K"), ((0,0), "q"), ((0,7), "k")]:
+            if move.from_sq == sq or move.to_sq == sq:
+                rights.discard(flag)
         
 
 
