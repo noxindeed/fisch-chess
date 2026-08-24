@@ -238,5 +238,11 @@ class Game:
 # defination, to do later
 class _Record:
     __slots__ = ("move", "captured", "ep_captured", "castling_rights","ep_square", "halfmove_clock")
-    def __init__(EMPTY):
-        return EMPTY
+    def __init__(self, move, captured, ep_captured, castling_rights, ep_square, halfmove_clock):
+        self.move = move
+        self.captured = captured
+        self.ep_captured = ep_captured
+        self.castling_rights = castling_rights
+        self.ep_square = ep_square
+        self.halfmove_clock = halfmove_clock
+        
