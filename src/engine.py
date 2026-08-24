@@ -10,7 +10,7 @@ CHECKMATE = "checkmate"
 STALEMATE = "stalemate"
 DRAW_FIFTY = "draw_fifty"
 DRAW_MATERIAL = "draw_material"
-DRAW_REPETITON = "draw_repetition"
+DRAW_REPETITION = "draw_repetition"
 
 class Game:
     def __init__(self, fen=STARTING_FEN):
@@ -192,8 +192,48 @@ class Game:
                 rights.discard(flag)
         
 
+    # game state
 
+    def in_check(self, color= None):
+        color = color or self.turn
+        king = self.board.find_king(color)
+        return self.board.is_square_attacked(*king, opponent(color))
 
+    def status(self):
+        if not self.legal_moves():
+            if self.in_check():
+                return CHECKMATE
+            return STALEMATE
+        if self.halfmove_clock >= 100:
+            return DRAW_FIFTY
+        if self._insufficient_material():
+            return DRAW_MATERIAL
+        if self.repetition_counts.get(self._position_key(), 0) >= 3:
+            return DRAW_REPETITION
+        if self.in_check():
+            return CHECK
+        return NORMAL
+
+    def is_over(self):
+        return self.status() in (CHECKMATE, STALEMATE, DRAW_FIFTY, DRAW_MATERIAL, DRAW_REPETITION)
+
+    def _insufficient_material(self):
+        pieces = []
+        for row in range(8):
+            for col in range(8):
+                p = self.board.get(row, col)
+                if p != EMPTY and p.lower() != "k":
+                    pieces.append((p, row, col))
+
+        if not pieces:
+            return True
+        if len(pieces) == 1 and pieces[0][0].lower() in ("b","n"):
+            return True
+        if (len(pieces) == 2 
+            and all(p.lower() == 'b' for p, _, _ in pieces)
+            and (pieces[0][1] + pieces[0][2])%2 == (pieces[1][1]+ pieces[1][2])%2):
+            return True
+        return False
 
 # defination, to do later
 class _Record:
