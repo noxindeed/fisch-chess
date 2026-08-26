@@ -159,6 +159,23 @@ class App:
     last_move: str = ""
     puzzle_index: int = 0
 
+    def set_message() -> None:
+        None
+
+    def start_game() -> None:
+        None
+
+    def start_puzzle() -> None:
+        None
+
+    def board_text(self) -> str:
+        assert self.game is not None
+        lines = ["    a   b   c   d   e   f   g   h", "  +---+---+---+---+---+---+---+---+"]
+        for row in range(8):
+            cells = " | ".join(self.game.board.get(row, col) if self.game.board.get(row, col) != EMPTY else " " for col in range(8))
+            lines.append(f"{8-row} | {cells} |")
+            lines.append("  +---+---+---+---+---+---+---+---+")
+        return "\n".join(lines)
 
 def main() -> None:
     App().run()
