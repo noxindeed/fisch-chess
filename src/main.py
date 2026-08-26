@@ -177,6 +177,33 @@ class App:
             lines.append("  +---+---+---+---+---+---+---+---+")
         return "\n".join(lines)
 
+    def status_text(self) -> tuple[str, str]:
+        assert self.game is not None
+        status = self.game.status()
+        side = "WHITE" if self.game.turn == WHITE else "BLACK"
+
+        if status == CHECK:
+            return f"CHECK - {side} KING IS IN CHECK", ERROR
+
+        if status == CHECKMATE:
+            winner = "WHITE" if opponent(self.game.turn) == WHITE else "BLACK"
+            return f"CHECKMATE\n\n{winner} WINS", ACCENT
+
+        if status == STALEMATE:
+            return "STALEMATE\n\nDRAW", ACCENT
+
+        if status == DRAW_FIFTY:
+            return "DRAW - FIFTY-MOVE RULE", ACCENT
+
+        if status == DRAW_MATERIAL:
+            return "DRAW - INSUFFICIENT MATERAL", ACCENT
+
+        if status == DRAW_REPETITION:
+            return "DRAW THREEFOLD REPETITION", ACCENT
+
+        return f"{side} TO MOVE", ACCENT
+        
+
 def main() -> None:
     App().run()
 
