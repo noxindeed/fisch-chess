@@ -159,8 +159,10 @@ class App:
     last_move: str = ""
     puzzle_index: int = 0
 
-    def set_message() -> None:
-        None
+    def set_message(self, text: str, kind: str = "status") -> None:
+        self.message = text
+        self.message_kind = kind
+        
 
     def start_game() -> None:
         None
@@ -214,6 +216,19 @@ class App:
             print("4. Puzzle Mode")
             print("5. Quit\n")
             print(paint("Type a number and press enter to select", DIM))
+            return
+
+        if self.mode == "fen_input":
+            print(paint("LOAD POSITION", ACCENT))
+            print("=============\n")
+            print(paint("paste or type a FEN string and press enter", DIM))
+            print(paint("example: "+ STARTING_FEN, DIM))
+            print(paint("type 'q' to cancel", DIM))
+            if self.message:
+                print(paint(self.message, ERROR if self.message_kind == "error" else STATUS))
+            return
+
+        
         
 
 def main() -> None:
