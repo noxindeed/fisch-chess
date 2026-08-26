@@ -146,3 +146,22 @@ def ai_move(game: Game, depth: int = 3) -> Optional[Move]:
         if (maximizing and score > best_score) or ((not maximizing) and score < best_score):
             best_score, best = score, move
     return best
+
+
+@dataclass
+class App:
+    mode: str = "menu"
+    game: Optional[Game] = None
+    vd_ai: bool = False
+    ai_color: str = BLACK
+    message: str = ""
+    message_kind: str = "status"
+    last_move: str = ""
+    puzzle_index: int = 0
+
+
+def main() -> None:
+    App().run()
+
+if __name__ == "__main__":
+    main()
