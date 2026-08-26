@@ -202,6 +202,18 @@ class App:
             return "DRAW THREEFOLD REPETITION", ACCENT
 
         return f"{side} TO MOVE", ACCENT
+
+    def render(self) -> None:
+        clear_screen()
+        if self.mode == "menu":
+            print(paint("FISCH CHESS", ACCENT))
+            print("===========\n")
+            print("1. New Game (two players, offline)")
+            print("2. New Game (vs not so smart AI)")
+            print("3. Load Position (FEN)")
+            print("4. Puzzle Mode")
+            print("5. Quit\n")
+            print(paint("Type a number and press enter to select", DIM))
         
 
 def main() -> None:
