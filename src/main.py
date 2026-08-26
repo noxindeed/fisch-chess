@@ -69,3 +69,80 @@ def parse_move_input(text: str):
     if not match:
         return None
     return parse_square(match.group(1)), parse_square(match.group(2)), match.group(3) or ""
+
+
+def evaluate(game: Game) -> int:
+    score = 0
+    for row in range(8):
+        for col in range(8):
+            piece = game.board.get(row, col)
+            if piece != EMPTY:
+                continue
+            kind = piece.lower()
+            value = PIECE_VALUE[kind]
+            center = 3.5 - abs(3.5 - row) + 3.5 - abs(3.5 - col)
+            value += center * 2
+            if kind == "p":
+                value += (6 - row if color_of(piece) == WHITE else row - 1)*6
+            score += value if color_of(piece) == WHITE else -value
+    return int(score)
+
+def quiet_status(game: Game) -> str:
+    moves = game.legal_moves()
+    if not moves:
+        return CHECKMATE if game.in_check() else STALEMATE
+    if game.halfmove_clock >= 100:
+        return DRAW_FIFTY
+    if game._insufficient_material():
+        return DRAW_MATERIAL
+    if game.in_check():
+        return CHECK
+    return NORMAL
+
+def alpha_beta(game: Game, depth: int, alpha: float, beta: float) -> int:
+    status = quiet_status(game)
+    if status == CHECKMATE:
+        return (-100000 - depth) if game.turn == WHITE else (100000 + depth)
+    if status not in (NORMAL, CHECK):
+        return 0 
+    if depth == 0:
+        return evaluate(game)
+
+    moves = game.legal_moves()
+    if game.turn == WHITE:
+        value = -float("inf")
+        for move in moves:
+            record = game._make(move)
+            value = max(value, alpha_beta(game, depth - 1, alpha, beta))
+            game._unmake(record)
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return int(value)
+
+    value = float("inf")
+    for move in moves:
+        record = game._make(move)
+        value = min(value, alpha_beta(game, depth - 1, alpha, beta))
+        game._unmake(record)
+        beta = min(beta, value)
+        if alpha >= beta:
+            break
+    return int(value)
+
+
+def ai_move(game: Game, depth: int = 3) -> Optional[Move]:
+    moves = game.legal_moves()
+    if not moves:
+        return None
+    random.shuffle(moves)
+    maximizing = game.turn == WHITE
+    best_score = -float("inf") if maximizing else float("inf")
+    best = None
+    for move in moves:
+        record = game._make(move)
+        score = alpha_beta(game, depth - 1, -float("inf"), float("inf"))
+        game._unmake(record)
+        if (maximizing and score > best_score) or ((not maximizing) and score < best_score):
+            best_score, best = score, move
+    return best
