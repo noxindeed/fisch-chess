@@ -228,6 +228,39 @@ class App:
                 print(paint(self.message, ERROR if self.message_kind == "error" else STATUS))
             return
 
+        if self.mode == "quit":
+            print(paint("FISCH CHESS", ACCENT))
+            print("===========\n")
+            print("thanks for playing")
+            return
+
+        if self.mode == "history":
+            self.render_history()
+            return
+
+        assert self.game is not None
+        title = "FISCH CHESS - PUZZLE"if self.mode == "puzzle" else "FISCH CHESS"
+        print(paint(title, ACCENT))
+        print("===========\n")
+        if self.mode == "puzzle":
+            print(PUZZLES[self.puzzle_index]["text"]+ "\n")
+        print(self.board_text() + "\n")
+        status, style = self.status_text() 
+        print(paint(status, style))
+
+        if self.mode == "game":
+            print(paint("STATUS: "+ (self.message  or "_"), ERROR if self.message_kind == "error" else STATUS))
+            print("LAST MOVE: "+ (self.last_move or "-")+"\n")
+            print(paint("COMMANDS: 'u' for UNDO, 'r' for REDO, 'h' for HISTORY, 'f' for FEN, 'n' for NEW GAME, 'q' to QUIT to menu", DIM))
+            print(paint("MOVES: type(for example) 'e2e4' ; 'e7e8q' for promotion then press ENTER", DIM))
+        else:
+            if self.message :
+                print(paint(self.message, ERROR if self.message_kind == "error" else STATUS))
+            print(paint("Enter the mating move (e.g. a1a8) and press ENTER", DIM))
+
+        
+
+        
         
         
 
