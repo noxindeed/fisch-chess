@@ -164,8 +164,14 @@ class App:
         self.message_kind = kind
         
 
-    def start_game() -> None:
-        None
+    def start_game(self, vs_ai: int = 0) -> None:
+
+        self.game = Game()
+        self.mode =  "game"
+        self.vs_ai = vs_ai
+        self.last_move = ""
+        self.set_message("new game vs computer, you're playing WHITE" if vs_ai else "new game, two players")
+        
 
     def start_puzzle() -> None:
         None
