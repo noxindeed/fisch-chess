@@ -171,7 +171,7 @@ class App:
         self.vs_ai = vs_ai
         self.last_move = ""
         self.set_message("new game vs computer, you're playing WHITE" if vs_ai else "new game, two players")
-        
+
 
     def start_puzzle() -> None:
         None
@@ -264,6 +264,20 @@ class App:
                 print(paint(self.message, ERROR if self.message_kind == "error" else STATUS))
             print(paint("Enter the mating move (e.g. a1a8) and press ENTER", DIM))
 
+    def render_history(self) -> None:
+        assert self.game is not None
+        print(paint("MOVE HISTOR", ACCENT))
+        print("==========\n")
+        if not self.game.history:
+            print("no moves yet")
+        else:
+            for i, record in enumerate(self.game.history):
+                text = notation(record.move)
+                if i % 2 == 0 :
+                    print(f"{i//2 + 1}. {text}")
+                else:
+                    print(f"  {text}")
+        print("\n"+ paint("type anything and press ENTER to return", DIM))
         
 
         
