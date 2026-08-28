@@ -402,7 +402,34 @@ class App:
             self.set_message("computer played "+ notation(move)+ ".")
 
     def handle_puzzle(self, cmd: str) -> None:
-        return None
+        assert self.game is not None
+        if cmd == "q":
+            self.mode = "menu"
+            return
+
+        parsed = parse_move_input(cmd)
+        if not parsed:
+            self.set_message("enter a valid move", "error")
+            return
+
+        move = self.game.find_legal_move(parsed[0], parsed[1], parsed[2])
+
+        if move is None:
+            self.set_message("illegal move, try again", "error")
+            return
+
+        if notation(move) != PUZZLES[self.puzzle_index]["solution"]:
+            self.set_message("wrong move, try again", "error")
+            return
+
+        self.game.push(move)
+        if self.puzzle_index + 1 < len(PUZZLES):
+            self.puzzle_index += 1
+            self.game = Game(PUZZLES[self.puzzle_index]["fen"])
+            self.set_message("GG, CHECKMATE. Next puzzle loaded")
+        else:
+            self.set_message("GG, CHECKMATE. All puzzles solved - press 'q' to quit to menu")
+
 
     def run(self) -> None:
         return None
