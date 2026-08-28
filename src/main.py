@@ -278,8 +278,26 @@ class App:
                 else:
                     print(f"  {text}")
         print("\n"+ paint("type anything and press ENTER to return", DIM))
-        
 
+    def describe_illegal(self, parsed) -> str:
+        assert self.game is not None
+        from_sq, to_sq, _ = parsed
+        piece = self.game.board.get(*from_sq)
+        if piece == EMPTY:
+            return f"there is no piece on {square_name(*from_sq)}"
+        if color_of(piece) != self.game.turn:
+            owner = "white's" if color_of(piece) == WHITE else "black's"
+            side = "white" if self.game.turn == WHITE else "black"
+            return f"that is {owner} piece. {side} to move"
+        pseudo = any(
+            m.from_sq == from_sq and m.to_sq == to_sq 
+            for m in generate_pseudo_moves(self.game.board, self.game.turn, self.game.castling_rights, self.game.ep_square)
+
+        )
+        if pseudo:
+            return "illegal: that move leaves your kind in check son"
+        return "illegal movement for that piece"
+ 
         
         
         
