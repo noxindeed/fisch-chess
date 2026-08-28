@@ -235,7 +235,7 @@ class Game:
             return True
         return False
 
-# defination, to do later
+# defination
 class _Record:
     __slots__ = ("move", "captured", "ep_captured", "castling_rights","ep_square", "halfmove_clock")
     def __init__(self, move, captured, ep_captured, castling_rights, ep_square, halfmove_clock):

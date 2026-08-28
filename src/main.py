@@ -5,7 +5,7 @@ import random
 import re
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from .board import STARTING_FEN, parse_square, square_name
@@ -22,7 +22,7 @@ ERROR = "\033[91m"
 STATUS = "\033[32m"
 CLEAR = "\033[2J\033[H"
 
-USE_COLOR = sys.stdout.isatty() and os.enviorn.get("NO_COLOR") is None
+USE_COLOR = sys.stdout.isatty() and os.environ.get("NO_COLOR") is None
 
 def paint(text:str, style: str = "") -> str:
     if not USE_COLOR or not style:
@@ -76,7 +76,7 @@ def evaluate(game: Game) -> int:
     for row in range(8):
         for col in range(8):
             piece = game.board.get(row, col)
-            if piece != EMPTY:
+            if piece == EMPTY:
                 continue
             kind = piece.lower()
             value = PIECE_VALUE[kind]
@@ -152,12 +152,13 @@ def ai_move(game: Game, depth: int = 3) -> Optional[Move]:
 class App:
     mode: str = "menu"
     game: Optional[Game] = None
-    vd_ai: bool = False
+    vs_ai: bool = False
     ai_color: str = BLACK
     message: str = ""
     message_kind: str = "status"
     last_move: str = ""
     puzzle_index: int = 0
+    redo_stack: list[Move] = field(default_factory=list)
 
     def set_message(self, text: str, kind: str = "status") -> None:
         self.message = text
@@ -169,11 +170,12 @@ class App:
         self.game = Game()
         self.mode =  "game"
         self.vs_ai = vs_ai
+        self.ai_color = BLACK if vs_ai else WHITE
         self.last_move = ""
         self.set_message("new game vs computer, you're playing WHITE" if vs_ai else "new game, two players")
 
 
-    def start_puzzle() -> None:
+    def start_puzzle(self) -> None:
         None
 
     def board_text(self) -> str:
@@ -297,7 +299,95 @@ class App:
         if pseudo:
             return "illegal: that move leaves your kind in check son"
         return "illegal movement for that piece"
- 
+
+    def handle_game(self, cmd: str) -> None:
+        assert self.game is not None
+        if cmd == "q":
+            self.mode = "menu"
+            return
+
+        if cmd == "n":
+            self.start_game(self.vs_ai)
+            return
+
+        if cmd == "h":
+            self.mode = "history"
+            return
+
+        if cmd == "f":
+            self.set_message("FEN: "+ self.game.fen())
+            return
+
+        if cmd == "u":
+            move = self.game.pop()
+
+            if self.vs_ai and move is not None:
+                move2 = self.game.pop()
+                if move2 is not None:
+                    self.redo_stack.append(move2)
+
+            if move is not None:
+                self.redo_stack.append(move)
+
+            self.last_move = ""
+            self.set_message("move undone" if move else "nothing to undo", "status" if move else "error")
+            return
+
+        if cmd == "r":
+            if not self.redo_stack:
+                self.set_message("nothing to redo", "error")
+                return
+
+            move = self.redo_stack.pop()
+            self.game.push(move)
+            self.last_move = notation(move)
+
+            if self.vs_ai and self.redo_stack:
+                move2 = self.redo_stack.pop()
+                self.game.push(move2)
+                self.last_move = notation(move2)
+
+            self.set_message("move redone", "status")
+            return
+
+        if self.game.is_over():
+            self.set_message("the game is over, press 'n' for a new game or 'q' to quit", "error")
+            return
+
+        if self.vs_ai and self.game.turn == self.ai_color:
+            return
+
+        parsed = parse_move_input(cmd)
+
+        if not parsed:
+            self.set_message("invalid input use proper notatiton","error")
+            return
+
+        move = self.game.find_legal_move(parsed[0],parsed[1],parsed[2])
+
+        if move is None:
+            self.set_message("ERROR: "+self.describe_illegal(parsed),"error")
+            return
+
+        self.redo_stack.clear()
+
+        self.game.push(move)
+        self.last_move = notation(move)
+        self.set_message("move accepted and played")
+        self.ai_reply() 
+
+    def ai_reply(self) -> None:
+        return None
+
+    def handle_puzzle(self, cmd: str) -> None:
+        return None
+
+    def run(self) -> None:
+        return None
+        
+
+
+
         
         
         
