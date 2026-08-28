@@ -432,8 +432,42 @@ class App:
 
 
     def run(self) -> None:
-        return None
-        
+        while True:
+            self.render()
+            try:
+                cmd = input("\n> ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print("\nThanks for playing <3")
+                return
+
+            if self.mode == "menu":
+                if cmd == "1": self.start_game(False)
+                elif cmd == "2": self.start_game(True)
+                elif cmd == "3": self.mode, self.message = "fen_input", ""
+                elif cmd == "4": self.start_puzzle(0)
+                elif cmd == "5": self.mode = "quit"
+                else: self.set_message("")
+            elif self.mode == "fen_output":
+                if cmd == "q":
+                    self.mode = "menu"
+                else:
+                    try:
+                        self.game = Game(cmd)
+                        self.mode = "game"
+                        self.vs_ai = False
+                        self.last_move = ""
+                        self.set_message("position loaded.")
+                    except (ValueError, IndexError) as exc:
+                        self.set_message("ERROR: "+str(exc), "error")
+
+            elif self.mode == "game":
+                self.handle_game(cmd)
+            elif self.mode == "puzzle":
+                self.handle_puzzle(cmd)
+            elif self.mode == "history":
+                self.mode = "game"
+            elif self.mode == "quit":
+                self.mode = "menu"        
 
 
 
