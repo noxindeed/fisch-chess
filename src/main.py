@@ -173,7 +173,7 @@ class App:
         self.ai_color = BLACK if vs_ai else WHITE
         self.last_move = ""
         self.redo_stack.clear()
-        
+
         self.set_message("new game vs computer, you're playing WHITE" if vs_ai else "new game, two players")
 
 
@@ -385,7 +385,21 @@ class App:
         self.ai_reply() 
 
     def ai_reply(self) -> None:
-        return None
+        if not self.vs_ai or self.game is None or self.game.turn != self.ai_color:
+
+            return 
+        if self.game.status() not in (NORMAL,CHECK):
+            return
+
+        self.set_message("THINKING..","STATUS")
+        self.render()
+        time.sleep(0.05) #larped delay cuz why not
+
+        move = ai_move(self.game, 3)
+        if move is None:
+            self.game.push(move)
+            self.last_move = notation(move)
+            self.set_message("computer played "+ notation(move)+ ".")
 
     def handle_puzzle(self, cmd: str) -> None:
         return None
