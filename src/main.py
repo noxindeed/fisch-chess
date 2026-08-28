@@ -172,11 +172,19 @@ class App:
         self.vs_ai = vs_ai
         self.ai_color = BLACK if vs_ai else WHITE
         self.last_move = ""
+        self.redo_stack.clear()
+        
         self.set_message("new game vs computer, you're playing WHITE" if vs_ai else "new game, two players")
 
 
-    def start_puzzle(self) -> None:
-        None
+    def start_puzzle(self, index: int = 0 ) -> None:
+        self.puzzle_index = index 
+        self.game = Game(fen=PUZZLES[index]["fen"])
+        self.mode = "puzzle"
+        self.last_move =""
+        self.set_message("")
+        
+        
 
     def board_text(self) -> str:
         assert self.game is not None
