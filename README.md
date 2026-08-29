@@ -5,6 +5,7 @@
 This is a lightweight chess game written in Python and played entirely inside the terminal(v1).
 
 ## ✦ Features
+```
 [-] local two-player chess 
 [-] simple computer opponent 
 [-] legal move validation 
@@ -17,6 +18,7 @@ This is a lightweight chess game written in Python and played entirely inside th
 [-] move history 
 [-] FEN loading 
 [-] puzzle mode 
+```
 
 chess logic is implemented inside the project itself insetad of relying on Stockish, Lichess, Chess(dot)com or another chess library/service
 
@@ -26,8 +28,9 @@ You need:
  `Python 3.11+`
 
 Clone the repo:
- `git clone https://github.com/noxindeed/fisch-chess/`
- `cd fisch-chess`
+
+> `git clone https://github.com/noxindeed/fisch-chess/`
+> `cd fisch-chess`
 
 Optional, but recommended is to run it in a venv
 
@@ -113,14 +116,16 @@ fisch-chess/
 
 ## ✦ Future plans
 V2
+```
 ├── online multiplayer
 ├── create / join game codes
 ├── real-time moves
 ├── reconnecting
 ├── resignation
 └── draw offers
-
+```
 later
+```
 ├── rematches
 ├── chess clocks
 ├── spectators
@@ -129,4 +134,4 @@ later
 ├── stronger AI
 ├── game history
 └── web client
-
+```
