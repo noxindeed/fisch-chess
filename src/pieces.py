@@ -22,10 +22,10 @@ def color_of(piece):
 def opponent(color):
     return BLACK if color == WHITE else WHITE
 
-def is_friend(color, piece):
+def is_friend(piece, color):
     return piece != EMPTY and color_of(piece) == color
 
-def is_enemy(color, piece):
+def is_enemy(piece, color):
     return piece != EMPTY and color_of(piece) == opponent(color)
 
 

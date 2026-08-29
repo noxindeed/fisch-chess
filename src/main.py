@@ -434,6 +434,9 @@ class App:
     def run(self) -> None:
         while True:
             self.render()
+
+            if self.mode == "quit":
+                breakpoint
             try:
                 cmd = input("\n> ").strip().lower()
             except (EOFError, KeyboardInterrupt):
@@ -467,7 +470,7 @@ class App:
             elif self.mode == "history":
                 self.mode = "game"
             elif self.mode == "quit":
-                self.mode = "menu"        
+                self.mode = "quit"        
 
 
 

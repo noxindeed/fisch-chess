@@ -116,6 +116,7 @@ def generate_pseudo_moves(board, color, castling_rights, ep_square):
                 continue
             kind = piece.lower()
 
+            
             if kind == "p":
                 yield from _pawn_moves(board, row, col, color, ep_square)
             elif kind == "n":
@@ -127,3 +128,5 @@ def generate_pseudo_moves(board, color, castling_rights, ep_square):
             elif kind == "k":
                 yield from _jump_moves(board, row, col, color, KING_OFFSETS)
                 yield from _castle_moves(board, row, col, color, castling_rights)
+            elif kind == "r":
+                yield from _slide_moves(board, row, col, color, ROOK_DIRECTIONS)

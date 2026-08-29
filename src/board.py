@@ -59,9 +59,10 @@ class Board:
 
         # pawns
         pawn = "P" if by_color == WHITE else "p"
-        pawn_row = -1 if by_color == WHITE else row - 1
+        pawn_offset = 1 if by_color == WHITE else -1
         for dc in (-1, 1):
-            if on_board(row + pawn_row, col + dc) and self.grid[pawn_row][col + dc] == pawn:
+            r,c = row + pawn_offset, col+dc
+            if on_board(r, c) and self.grid[r][c] == pawn:
                 return True
 
         # knights
@@ -76,9 +77,26 @@ class Board:
         straights = ("R" if by_color == WHITE else "r",
                      "Q" if by_color == WHITE else "q")
 
-        if self._ray_attacks(row, col, diagonals, BISHOP_DIRECTIONS):
+        #kings 
+        king = "K" if by_color == WHITE else "k"
+        for dr,dc in KING_OFFSETS:
+            r,c = row + dr, col + dc
+            if on_board(r,c) and self.grid[r][c] == king:
+                return True
+
+        diagonals= (
+            "B" if by_color == WHITE else "b",
+            "Q" if by_color == WHITE else "q",
+        )
+
+        straights = (
+            "R" if by_color == WHITE else "r",
+            "Q" if by_color == WHITE else "q",
+        )
+
+        if self._ray_attacks(row, col, BISHOP_DIRECTIONS, diagonals):
             return True
-        if self._ray_attacks(row, col, straights, ROOK_DIRECTIONS):
+        if self._ray_attacks(row, col, ROOK_DIRECTIONS, straights):
             return True 
         return False
 

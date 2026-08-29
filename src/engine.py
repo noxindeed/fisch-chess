@@ -53,7 +53,7 @@ class Game:
         self.repetition_counts = {self._position_key(): 1}
 
     def to_fen(self):
-        castling = "".join(ch for ch in "KQkq" if ch in self.castling_rights)
+        castling = "".join(ch for ch in "KQkq" if ch in self.castling_rights) or "-"
         if self.ep_square is None:
             ep = "-"
         else:
@@ -101,9 +101,10 @@ class Game:
 
     def pop(self):
         if not self.history:
-            raise None #
+            return None 
         key = self._position_key()
         self.repetition_counts[key] -= 1
+
         record = self.history.pop()
         self._unmake(record)
         return record.move  
@@ -116,13 +117,29 @@ class Game:
         captured = self.board.get(to_row, to_col)
         ep_captured = None  
 
+        record = _Record(
+            move = move,
+            captured = captured,
+            ep_captured = None,
+            castling_rights=frozenset(self.castling_rights),
+            ep_square=self.ep_square,
+            halfmove_clock=self.halfmove_clock,
+            
+        )
         # en passant capture
-        if (piece.lower() == "p" and move.to_sq == self.ep_square and captured == EMPTY and from_col != to_col):
+        if (
+            piece.lower() == "p" 
+            and move.to_sq == self.ep_square 
+            and captured == EMPTY 
+            and from_col != to_col
+        ):
             ep_row = from_row
             ep_captured = self.board.get(ep_row, to_col)
             self.board.set(ep_row, to_col, EMPTY)
+            record.ep_captured = ep_captured
 
-        self.board.set(ep_row, to_col, EMPTY) 
+        self.board.set(from_row, from_col, EMPTY) 
+
         placed = piece
         if move.promotion:
             placed = move.promotion.upper() if self.turn == WHITE else move.promotion
@@ -137,15 +154,22 @@ class Game:
                 rook = self.board.get(from_row, 0, EMPTY)
                 self.board.set(from_row,3,rook)
 
-        record = _Record(
-            move = move,
-            captured = captured,
-            ep_captured = ep_captured,
-            castling_rights = frozenset(self.castling_rights),
-            ep_square = self.ep_square,
-            halfmove_clock = self.halfmove_clock,
+        self._update_castling_rights(move, piece, captured)
 
-        )    
+        self.ep_square = None
+        if piece.lower() == "p" and abs(to_row - from_row) == 2:
+            self.ep_square = ((from_row + to_row) // 2, from_col)
+
+        if piece.lower() == "p" or captured != EMPTY or ep_captured is not None:
+            self.halfmove_clock = 0
+        else:
+            self.halfmove_clock += 1
+
+        if self.turn == BLACK:
+            self.fullmove_number += 1
+
+        self.turn = opponent(self.turn)
+        return record
 
     def _unmake(self,record):
         move = record.move
@@ -153,12 +177,15 @@ class Game:
         to_row, to_col = move.to_sq
 
         self.turn = opponent(self.turn)
+
         if self.turn == BLACK:
             self.fullmove_number -= 1
 
         piece = self.board.get(to_row, to_col)
+
         if move.promotion:
             piece = "P" if self.turn == WHITE else "p"
+
         self.board.set(from_row, from_col, piece)
         self.board.set(to_row, to_col, record.captured)
 
@@ -168,16 +195,16 @@ class Game:
         # undo castling
         if piece.lower() == "k" and abs(to_col - from_col) == 2:
             if to_col == 6:
-                rook = self.board.set(from_row, 5)
+                rook = self.board.get(from_row, 5)
                 self.board.set(from_row, 5, EMPTY)
                 self.board.set(from_row, 7, rook)
             else:
-                rook = self.board.set(from_row, 3)
+                rook = self.board.get(from_row, 3)
                 self.board.set(from_row, 3, EMPTY)
                 self.board.set(from_row, 0, rook)
 
         self.castling_rights = set(record.castling_rights)
-        self.ep_square = record.ep_sqaure
+        self.ep_square = record.ep_square
         self.halfmove_clock = record.halfmove_clock
 
     def _update_castling_rights(self, move, piece, captured):
