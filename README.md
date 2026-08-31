@@ -21,27 +21,39 @@ This is a lightweight chess game written in Python and played entirely inside th
 ```
 
 chess logic is implemented inside the project itself insetad of relying on Stockish, Lichess, Chess(dot)com or another chess library/service
-
 ## ✦ Installation
 
-You need: 
- `Python 3.11+`
+You need:
+`Python 3.11+`
+
+Install Fisch Chess from PyPI:
+
+> `pip install fisch-chess`
+
+Then run:
+
+> `fisch`
+
+To update later:
+
+> `pip install -U fisch-chess`
+
+## ✦ Run from source
 
 Clone the repo:
 
 > `git clone https://github.com/noxindeed/fisch-chess/`
 > `cd fisch-chess`
 
-Optional, but recommended is to run it in a venv
-
-## ✦ Run
+Optional, but recommended is to run it in a venv.
 
 From the project root:
 
 `python3 -m src.main`
 
 You should get:
-```
+
+```text
 FISCH CHESS
 ===========
 

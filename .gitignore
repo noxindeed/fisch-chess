@@ -1,2 +1,8 @@
 test.py
 __pycache__/
+dist/
+*.pyc
+build/
+*.egg-info/
+.venv/
+venv/
